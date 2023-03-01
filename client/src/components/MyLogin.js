@@ -11,7 +11,9 @@ const Login = () => {
     return (
         <div>
 
+            <Form method='POST' action=''>
 
+            
             <MDBContainer fluid className="p-3 my-5 h-custom " >
 
 
@@ -34,8 +36,8 @@ const Login = () => {
                         </div>
 
                         <div className='text-center text-md-start mt-4 pt-2'>
-                        <Button variant="primary" className='w-100'>Sign Up</Button>{' '}
-                            <p className="small fw-bold mt-2 pt-1 mb-2">Don't have an account?<Link to='/Register' className='text-danger'>Register</Link></p>
+                        <Button variant="primary" className='w-100' type='submit'>Sign Up</Button>{' '}
+                            <p className="small fw-bold mt-2 pt-1 mb-2">Don't have an account?<Link to='/register' className='text-danger'>Register</Link></p>
                         </div>
 
                         </Form>
@@ -45,6 +47,7 @@ const Login = () => {
                 </MDBRow>
 
             </MDBContainer>
+            </Form>
         </div>
     );
 }

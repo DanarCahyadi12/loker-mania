@@ -8,11 +8,19 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 
+const url = "http://localhost/register"
+const Hit = () => {
+    fetch(url ,{
+        method : "post",
+    })
+}
+
 
 const Register = () => {
     const navigate = useNavigate()
     return (
         <div>
+            <Form method='POST'>
             <MDBContainer fluid className="p-3 my-5 h-custom " >
                 <MDBRow className=''>
                     <MDBCol col='10' lg='6' sm={6} className='gambar'>
@@ -33,12 +41,12 @@ const Register = () => {
                                 <MDBInput wrapperClass='mb-4' label='Password' id='formControlLg' type='password' size="md" name='password' />
                                 <MDBInput wrapperClass='mb-4' label='Verification Password' id='formControlLg' type='password' size="md" name='verifyPassword'/>
 
-                                <Form.Select size="3" aria-label="size 3 select example">
+                                <Form.Select size="3" aria-label="size 3 select example" name='provinsi'>
                                     <option>Pilih Provinsi</option>
-                                    <option value="1">Bali</option>
-                                    <option value="2">Jakarta Pusat</option>
-                                    <option value="3">Jakarta Utara</option>
-                                    <option value="4">Jakarta Barat</option>
+                                    <option value="Bali">Bali</option>
+                                    <option value="Jakarta Pusat">Jakarta Pusat</option>
+                                    <option value="Jakarta Utara">Jakarta Utara</option>
+                                    {/* <option value="4">Jakarta Barat</option>
                                     <option value="5">Jakarta Timur</option>
                                     <option value="6">Jawa Tengah</option>
                                     <option value="7">Jawa Barat</option>
@@ -47,12 +55,12 @@ const Register = () => {
                                     <option value="10">NTB</option>
                                     <option value="11">Sumatra Utara</option>
                                     <option value="12">Sumatra Selatan</option>
-                                    <option value="13">Sumatra Barat</option>
+                                    <option value="13">Sumatra Barat</option> */}
                                 </Form.Select>
                             </MDBCol>
                         </MDBRow>
                         <div className='text-center text-md-start mt-4 pt-2'>
-                        <Button onClick={() => navigate('/Login')}>Sign Up</Button>
+                        <Button onClick={() => navigate('/login')}>Sign Up</Button>
                             <p className="small fw-bold mt-2 pt-1 mb-2">have an account? <a href="#!" className="link-danger text-decoration-none">Login</a></p>
                         </div>
                     </MDBCol>
@@ -60,6 +68,7 @@ const Register = () => {
                 </MDBRow>
 
             </MDBContainer>
+            </Form>
         </div>
     )
 }
