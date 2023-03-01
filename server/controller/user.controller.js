@@ -101,12 +101,13 @@ const Login = (req,res) => {
         bcrypt.compare(plainTextPass,hashedPass,(err,result) => {
             if(err) throw err
             if(!result){
-                return res.json({massage : "Email atau password salah"})
+                return res.status(403).json({massage : "Email atau password salah",status :403})
             }else{
                 let token = SetTokenAuth(data)
                 res.cookie('userToken',token,{
-                httpOnly : true,
+                httpOnly : true
             })
+
             return res.status(200).json({
                 massage : "Login succesfully",
                 status : 200,
@@ -134,4 +135,4 @@ const Logout = (req,res) => {
     return res.status(200).json({massage : "Logout succesfully",status :200})
 }
 
-module.exports = {Login,Register,Logout}
+module.exports = {Login,Register,Logout }
