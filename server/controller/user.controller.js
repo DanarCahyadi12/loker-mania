@@ -30,6 +30,7 @@ const InsertIntoDatabase = (name,email,password,provinsi,address,phone,descripti
         if(err) throw err
         return  res.status(200).json({
             massage : "Register succes",
+            status :200,
             data ,
             redirect : "/login"
         })
@@ -51,11 +52,14 @@ const Register = (req,res,next) => { //main function for register
          
         }else if(exits){ // if name or email already exits
             return res.status(409).json({
-                massage :massage
+                massage :massage,
+                status :403
+
             })
         }else if(!CheckPassword(password)) { // if length password less than 8
             return res.status(409).json({
-                massage :massages
+                massage :massages,
+                status :403
             })
         }
     })
@@ -68,7 +72,7 @@ const GetDataAndCompare  = (email,password,passwordCompare,res) => { //function 
     conn.query(sql,[email],(err,data) => {
         if(err) throw err
         if(data.length > 0 ) passwordCompare(password,data[0].password,data[0]) 
-        else return res.status(403).json({massage : "Email atau password salah"})
+        else res.status(403).json({massage : "Email atau password salah",status :403})
     })      
 
 }
@@ -76,7 +80,13 @@ const GetDataAndCompare  = (email,password,passwordCompare,res) => { //function 
 const SetTokenAuth = (data) => {
     const dataUser = {
         id : data.id,
-        name: data.company_name
+        name: data.company_name,
+        email : data.email,
+        provinsi : data.provinsi,
+        address : data.address,
+        phone : data.phone,
+        description : data.description,
+        photo : data.path
 
     }
     const token = jwt.sign({
@@ -87,20 +97,41 @@ const SetTokenAuth = (data) => {
 }
 const Login = (req,res) => {
     const {email,password} = req.body
-    GetDataAndCompare(email,password, async function(plainTextPass,hashedPass,data) {
-        let result = await bcrypt.compare(plainTextPass,hashedPass)
-        if(!result){
-            return res.json({massage : "Email atau password salah"})
-        } 
-        else{
-            let token = SetTokenAuth(data)
-            res.cookie('userToken',token,{
+    GetDataAndCompare(email,password, function(plainTextPass,hashedPass,data) {
+        bcrypt.compare(plainTextPass,hashedPass,(err,result) => {
+            if(err) throw err
+            if(!result){
+                return res.json({massage : "Email atau password salah"})
+            }else{
+                let token = SetTokenAuth(data)
+                res.cookie('userToken',token,{
                 httpOnly : true,
-                secure : true
             })
-        } 
+            return res.status(200).json({
+                massage : "Login succesfully",
+                status : 200,
+                data : {
+                    id : data.id,
+                    name: data.company_name,
+                    email : data.email,
+                    provinsi : data.provinsi,
+                    address : data.address,
+                    phone : data.phone,
+                    description : data.description,
+                    photo : data.path
+                }
+
+            })
+          } 
+        })
+       
     },res)
 
 }
 
-module.exports = {Login,Register}
+const Logout = (req,res) => {
+    res.clearCookie('userToken')
+    return res.status(200).json({massage : "Logout succesfully",status :200})
+}
+
+module.exports = {Login,Register,Logout}
