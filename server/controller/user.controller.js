@@ -1,5 +1,5 @@
 const conn = require("../connection")
-const {SetTokenAuth} = require("../middleware/jwt")
+const {SetTokenAuth,DecodeJWT} = require("../middleware/jwt")
 const bcrypt = require("bcrypt")
 const SR = 10
 
@@ -11,7 +11,7 @@ const CheckNameAndEmail = (name,email,cb) => { // function for check an email an
     conn.query(sql,[name,email],(err,data) => {
         if(err) throw err
         if(data.length > 0) {
-            cb(true,"Nama perusahaan atau email sudah sudah terdaftar.")
+            cb(true,"Name of company or email already exits.")
         }else{
             cb(false)
         }
@@ -26,9 +26,11 @@ const CheckPassword = (password) => { //function for checking length password
 }
 const InsertIntoDatabase = (name,email,password,provinsi,address,phone,description,photo_path,res) => { //function for insert form data into database
     const sql = "INSERT INTO company (company_name,email,password,provinsi,address,phone,description,photo_path) VALUES(?,?,?,?,?,?,?,?)"
-    conn.query(sql,[name,email,password,provinsi,address,phone,description,photo_path],(err,data) => {
+    let fixName = name.trim()
+    conn.query(sql,[fixName,email,password,provinsi,address,phone,description,photo_path],(err,data) => {
         if(err) throw err
-        return  res.status(200).json({
+        if(!data.affectedRows) return res.status(500).json({massage : "Something wrong please try again",status : 500})
+        res.status(200).json({
             massage : "Register succes",
             status :200,
             data ,
@@ -68,7 +70,7 @@ const Register = (req,res) => { //main function for register
 
 //Login
 const GetDataAndCompare  = (email,password,passwordCompare,res) => { //function for get data from database and compare hashed password
-    let sql = "SELECT * FROM company WHERE email = ? "
+    let sql = "SELECT * FROM company WHERE email = ?"
     conn.query(sql,[email],(err,data) => {
         if(err) throw err
         if(data.length > 0 ) passwordCompare(password,data[0].password,data[0]) 
@@ -79,27 +81,27 @@ const GetDataAndCompare  = (email,password,passwordCompare,res) => { //function 
 
 const Login = (req,res) => {
     const {email,password} = req.body
-    GetDataAndCompare(email,password, function(plainTextPass,hashedPass,data) {
-        bcrypt.compare(plainTextPass,hashedPass,(err,result) => {
-            if(err) throw err
-            if(!result){
-                return res.status(403).json({massage : "Email atau password salah",status :403,auth : false})
-            }else{
-                let token = SetTokenAuth(data)
-                res.cookie('userToken',token,{
-                httpOnly : true
+        GetDataAndCompare(email,password, function(plainTextPass,hashedPass,data) {
+            bcrypt.compare(plainTextPass,hashedPass,(err,result) => {
+                if(err) throw err
+                if(!result){
+                    return res.status(403).json({massage : "Email atau password salah",status :403,auth : false})
+                }else{
+                    let token = SetTokenAuth(data)
+                    res.cookie('userToken',token,{
+                    httpOnly : true
+                })
+    
+                return res.status(200).json({
+                    massage : "Login succesfully",
+                    status : 200,
+                    auth : true,
+                    token : token
+                })
+              } 
             })
-
-            return res.status(200).json({
-                massage : "Login succesfully",
-                status : 200,
-                auth : true,
-                token : token
-            })
-          } 
-        })
-       
-    },res)
+           
+        },res)
 
 }
 

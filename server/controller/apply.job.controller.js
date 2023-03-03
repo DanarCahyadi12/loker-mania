@@ -1,9 +1,8 @@
 const {InsertApplicants,InsertApplied} = require('../controller/applicants.controller')
-const {DecodeJWT} = require("../middleware/jwt")
+const conn = require("../connection")
 
 const  ApplyJob = (req,res) => {
     const id = req.params.id
-    const decoded = DecodeJWT(req,res)
     InsertApplicants(req.body,(result)=>{
         if(!result.affectedRows)  return res.status(500).json({massage : "Something wrong please try again",status:500})
         InsertApplied(result.insertId,id,(result) => {
