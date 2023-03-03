@@ -5,6 +5,7 @@ const {GetListApplicants,GetSpecifyApplicants,DeleteApplicants} = require("../co
 const {GetVacancyLimited,GetSpecifyVacancy,AddVacancy,GetAllVacancy} = require("../controller/vacancy.controller") 
 const {ApplyJob} = require("../controller/apply.job.controller")
 const {UserAuth} = require("../middleware/jwt")
+const {GetProfileCompany,UpdateProfile} = require("../controller/profile.controller")
 router.post("/login",Login)
 router.post("/register",Register)
 router.get("/logout",Logout)
@@ -17,6 +18,8 @@ router.get("/view/:id",GetSpecifyVacancy)
 router.post("/view/:id",ApplyJob)
 router.get("/search",GetAllVacancy)
 router.get("/search/:id",GetSpecifyVacancy)
-router.post("/search/:id",ApplyJob)
+router.post("/search/:id",ApplyJob) 
+router.get("/profile",UserAuth,GetProfileCompany)
+router.post("/profile",UpdateProfile)
 module.exports = router
 
