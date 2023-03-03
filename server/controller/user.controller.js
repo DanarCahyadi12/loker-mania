@@ -1,5 +1,5 @@
 const conn = require("../connection")
-const jwt = require("jsonwebtoken")
+const {SetTokenAuth} = require("../middleware/jwt")
 const bcrypt = require("bcrypt")
 const SR = 10
 
@@ -32,13 +32,13 @@ const InsertIntoDatabase = (name,email,password,provinsi,address,phone,descripti
             massage : "Register succes",
             status :200,
             data ,
-            redirect : "/login"
         })
 
     })
 }
-const Register = (req,res,next) => { //main function for register
-    const {name,email,password,provinsi,address,phone,description,photo_path} = req.body
+const Register = (req,res) => { //main function for register
+    const {name,email,password,verify,provinsi,address,phone,description,photo_path} = req.body
+    if(password !== verify) return res.status(400).json({massage : "Verifikasi password tidak valid"})
     CheckNameAndEmail(name,email,(exits,massage) => { // Name and email validation
         if(!exits && CheckPassword(password)) {
             bcrypt.genSalt(SR,(err,salt) => { //generate salt for hashing password
@@ -72,36 +72,18 @@ const GetDataAndCompare  = (email,password,passwordCompare,res) => { //function 
     conn.query(sql,[email],(err,data) => {
         if(err) throw err
         if(data.length > 0 ) passwordCompare(password,data[0].password,data[0]) 
-        else res.status(403).json({massage : "Email atau password salah",status :403})
+        else res.status(403).json({massage : "Email atau password salah",status :403,auth : false})
     })      
 
 }
 
-const SetTokenAuth = (data) => {
-    const dataUser = {
-        id : data.id,
-        name: data.company_name,
-        email : data.email,
-        provinsi : data.provinsi,
-        address : data.address,
-        phone : data.phone,
-        description : data.description,
-        photo : data.path
-
-    }
-    const token = jwt.sign({
-        dataUser
-    },process.env.TOKEN_SECRET)
-    return token
-
-}
 const Login = (req,res) => {
     const {email,password} = req.body
     GetDataAndCompare(email,password, function(plainTextPass,hashedPass,data) {
         bcrypt.compare(plainTextPass,hashedPass,(err,result) => {
             if(err) throw err
             if(!result){
-                return res.status(403).json({massage : "Email atau password salah",status :403})
+                return res.status(403).json({massage : "Email atau password salah",status :403,auth : false})
             }else{
                 let token = SetTokenAuth(data)
                 res.cookie('userToken',token,{
@@ -111,17 +93,8 @@ const Login = (req,res) => {
             return res.status(200).json({
                 massage : "Login succesfully",
                 status : 200,
-                data : {
-                    id : data.id,
-                    name: data.company_name,
-                    email : data.email,
-                    provinsi : data.provinsi,
-                    address : data.address,
-                    phone : data.phone,
-                    description : data.description,
-                    photo : data.path
-                }
-
+                auth : true,
+                token : token
             })
           } 
         })
