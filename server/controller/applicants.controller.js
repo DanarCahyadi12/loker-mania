@@ -36,7 +36,7 @@ const DeleteApplicants = (req,res) => {
 
 const GetSpecifyApplicants = (req,res) => {
     let id = req.params.id
-    let sql = "SELECT applied_job.id_applied applicants.idapplicants,applicants.full_name,applicants.email,applicants.address,applicants.phone,applicants.age,applicants.gender,applicants.cv_path ,job_list.title as position_applied FROM applied_job INNER JOIN applicants ON applicants.idapplicants = applied_job.fk_applicants INNER JOIN job_list ON applied_job.fk_job = job_list.idjob_list WHERE applied_job.fk_company = ? AND applied_job.fk_applicants = ?"
+    let sql = "SELECT applied_job.id_applied ,applicants.idapplicants,applicants.full_name,applicants.email,applicants.address,applicants.phone,applicants.age,applicants.gender,applicants.cv_path ,job_list.title as position_applied FROM applied_job INNER JOIN applicants ON applicants.idapplicants = applied_job.fk_applicants INNER JOIN job_list ON applied_job.fk_job = job_list.idjob_list WHERE applied_job.fk_company = ? AND applied_job.fk_applicants = ?"
     let decoded =  DecodeJWT(req,res)
     conn.query(sql,[decoded.id,id],(err,result) => {
         if(err) throw err

@@ -1,6 +1,4 @@
 const {InsertApplicants,InsertApplied} = require('../controller/applicants.controller')
-const conn = require("../connection")
-
 const  ApplyJob = (req,res) => {
     const id = req.params.id
     InsertApplicants(req.body,(result)=>{
