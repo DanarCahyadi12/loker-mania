@@ -1,8 +1,18 @@
 const express = require("express")
 const router = express.Router()
 const {Login,Register,Logout} = require("../controller/user.controller")
+const {GetListApplicants,} = require("../controller/applicants.controller")
+const {GetAllVacancy,GetSpecifyVacancy,AddVacancy} = require("../controller/vacancy.controller") 
+const {ApplyJob} = require("../controller/apply.job.controller")
+const {UserAuth} = require("../middleware/jwt")
 router.post("/login",Login)
 router.post("/register",Register)
 router.get("/logout",Logout)
+router.get("/dashboard",UserAuth,GetListApplicants)
+router.get('/applicants/:id',)
+router.get("/view",GetAllVacancy)
+router.post("/add-vacancy",UserAuth,AddVacancy)
+router.get("/view/:id",GetSpecifyVacancy)
+router.post("/view/:id",ApplyJob)
 module.exports = router
 

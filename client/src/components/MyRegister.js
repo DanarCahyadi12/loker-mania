@@ -8,12 +8,7 @@ import Button from 'react-bootstrap/Button';
 import { Link } from 'react-router-dom';
 import { NavLink } from 'react-router-dom';
 
-const url = "http://localhost/register"
-const Hit = () => {
-    fetch(url ,{
-        method : "post",
-    })
-}
+s
 
 
 const Register = () => {
@@ -39,7 +34,7 @@ const Register = () => {
                             <MDBCol col='10' lg='6' sm={6}>
 
                                 <MDBInput wrapperClass='mb-4' label='Password' id='formControlLg' type='password' size="md" name='password' />
-                                <MDBInput wrapperClass='mb-4' label='Verification Password' id='formControlLg' type='password' size="md" name='verifyPassword'/>
+                                <MDBInput wrapperClass='mb-4' label='Verification Password' id='formControlLg' type='password' size="md" name='verify'/>
 
                                 <Form.Select size="3" aria-label="size 3 select example" name='provinsi'>
                                     <option>Pilih Provinsi</option>
